@@ -5,14 +5,13 @@
 
 #include <vulkan/vulkan.h>
 
-// Checks the given expression's return value against VK_SUCCESS
-#define VK_CHECK(expr)                  \
-    {                                   \
-        KASSERT(expr == VK_SUCCESS);    \
+// Checks the given expression's return value against VK_SUCCESS.
+#define VK_CHECK(expr)               \
+    {                                \
+        KASSERT(expr == VK_SUCCESS); \
     }
 
-typedef struct vulkan_swapchain_support_info
-{
+typedef struct vulkan_swapchain_support_info {
     VkSurfaceCapabilitiesKHR capabilities;
     u32 format_count;
     VkSurfaceFormatKHR* formats;
@@ -20,8 +19,7 @@ typedef struct vulkan_swapchain_support_info
     VkPresentModeKHR* present_modes;
 } vulkan_swapchain_support_info;
 
-typedef struct vulkan_device
-{
+typedef struct vulkan_device {
     VkPhysicalDevice physical_device;
     VkDevice logical_device;
     vulkan_swapchain_support_info swapchain_support;
@@ -42,8 +40,7 @@ typedef struct vulkan_device
     VkFormat depth_format;
 } vulkan_device;
 
-typedef struct vulkan_image
-{
+typedef struct vulkan_image {
     VkImage handle;
     VkDeviceMemory memory;
     VkImageView view;
@@ -51,8 +48,7 @@ typedef struct vulkan_image
     u32 height;
 } vulkan_image;
 
-typedef enum vulkan_render_pass_state
-{
+typedef enum vulkan_render_pass_state {
     READY,
     RECORDING,
     IN_RENDER_PASS,
@@ -61,29 +57,27 @@ typedef enum vulkan_render_pass_state
     NOT_ALLOCATED
 } vulkan_render_pass_state;
 
-typedef struct vulkan_renderpass
-{
+typedef struct vulkan_renderpass {
     VkRenderPass handle;
     f32 x, y, w, h;
     f32 r, g, b, a;
+
     f32 depth;
     u32 stencil;
+
     vulkan_render_pass_state state;
 } vulkan_renderpass;
 
-typedef struct vulkan_framebuffer
-{
+typedef struct vulkan_framebuffer {
     VkFramebuffer handle;
     u32 attachment_count;
     VkImageView* attachments;
     vulkan_renderpass* renderpass;
 } vulkan_framebuffer;
 
-
-typedef struct vulkan_swapchain
-{
+typedef struct vulkan_swapchain {
     VkSurfaceFormatKHR image_format;
-    u8 max_frame_in_flight;
+    u8 max_frames_in_flight;
     VkSwapchainKHR handle;
     u32 image_count;
     VkImage* images;
@@ -91,12 +85,11 @@ typedef struct vulkan_swapchain
 
     vulkan_image depth_attachment;
 
-    // Framebuffers used for on-screen rendering
+    // framebuffers used for on-screen rendering.
     vulkan_framebuffer* framebuffers;
 } vulkan_swapchain;
 
-typedef enum vulkan_command_buffer_state
-{
+typedef enum vulkan_command_buffer_state {
     COMMAND_BUFFER_STATE_READY,
     COMMAND_BUFFER_STATE_RECORDING,
     COMMAND_BUFFER_STATE_IN_RENDER_PASS,
@@ -105,34 +98,32 @@ typedef enum vulkan_command_buffer_state
     COMMAND_BUFFER_STATE_NOT_ALLOCATED
 } vulkan_command_buffer_state;
 
-typedef struct vulkan_command_buffer
-{
+typedef struct vulkan_command_buffer {
     VkCommandBuffer handle;
 
-    // Command buffer state
+    // Command buffer state.
     vulkan_command_buffer_state state;
 } vulkan_command_buffer;
 
-typedef struct vulkan_fence
-{
+typedef struct vulkan_fence {
     VkFence handle;
     b8 is_signaled;
 } vulkan_fence;
 
-typedef struct vulkan_context
-{
-    // The framebuffer's current width
+typedef struct vulkan_context {
+
+    // The framebuffer's current width.
     u32 framebuffer_width;
 
-    // The framebuffer's current height
+    // The framebuffer's current height.
     u32 framebuffer_height;
 
     // Current generation of framebuffer size. If it does not match framebuffer_size_last_generation,
-    // a new one should be generated
+    // a new one should be generated.
     u64 framebuffer_size_generation;
 
     // The generation of the framebuffer when it was last created. Set to framebuffer_size_generation
-    // when updated
+    // when updated.
     u64 framebuffer_size_last_generation;
 
     VkInstance instance;
@@ -160,7 +151,7 @@ typedef struct vulkan_context
     u32 in_flight_fence_count;
     vulkan_fence* in_flight_fences;
 
-    // Holds pointers to fences which exist and are owned elsewhere
+    // Holds pointers to fences which exist and are owned elsewhere.
     vulkan_fence** images_in_flight;
 
     u32 image_index;

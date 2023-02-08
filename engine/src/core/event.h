@@ -2,11 +2,9 @@
 
 #include "defines.h"
 
-typedef struct event_context
-{
+typedef struct event_context {
     // 128 bytes
-    union 
-    {
+    union {
         i64 i64[2];
         u64 u64[2];
         f64 f64[2];
@@ -25,42 +23,39 @@ typedef struct event_context
     } data;
 } event_context;
 
-// Should return true if handled
+// Should return true if handled.
 typedef b8 (*PFN_on_event)(u16 code, void* sender, void* listener_inst, event_context data);
 
-b8 event_initialize();
-void event_shutdown();
+void event_system_initialize();
+void event_system_shutdown();
 
 /**
  * Register to listen for when events are sent with the provided code. Events with duplicate
- * listener/callback combos will not be registered again and will cause this to return FALSE
- * @param code The event code to listen for
- * @param listener A pointer to a listener instance. Can be 0/NULL
- * @param on_event The callback function pointer to be invoked when the event code is fired
- * @returns TRUE if the event is successfully registered; otherwise false
- * 
+ * listener/callback combos will not be registered again and will cause this to return false.
+ * @param code The event code to listen for.
+ * @param listener A pointer to a listener instance. Can be 0/NULL.
+ * @param on_event The callback function pointer to be invoked when the event code is fired.
+ * @returns true if the event is successfully registered; otherwise false.
  */
 KAPI b8 event_register(u16 code, void* listener, PFN_on_event on_event);
 
 /**
  * Unregister from listening for when events are sent with the provided code. If no matching
- * registration is found, this function return FALSE
- * @param code The event code to stop listening for
- * @param listener A pointer to a listener instance. Can be 0/NULL
- * @param on_event The callback function pointer to be unregistered
- * @returns TRUE if the event is successfully unregistered; otherwise false
- * 
+ * registration is found, this function returns false.
+ * @param code The event code to stop listening for.
+ * @param listener A pointer to a listener instance. Can be 0/NULL.
+ * @param on_event The callback function pointer to be unregistered.
+ * @returns true if the event is successfully unregistered; otherwise false.
  */
 KAPI b8 event_unregister(u16 code, void* listener, PFN_on_event on_event);
 
 /**
- * Fires an event to listeners of the given code. If an event handler returns
- * TRUE, the event is considered handled and is not passed on to any more listeners
- * @param code The event code to fire
- * @param sender A pointer to the sender. Can be 0/NULL
- * @param data The event data
- * @returns TRUE if handled, otherwise FALSE
- * 
+ * Fires an event to listeners of the given code. If an event handler returns 
+ * true, the event is considered handled and is not passed on to any more listeners.
+ * @param code The event code to fire.
+ * @param sender A pointer to the sender. Can be 0/NULL.
+ * @param data The event data.
+ * @returns true if handled, otherwise false.
  */
 KAPI b8 event_fire(u16 code, void* sender, event_context context);
 

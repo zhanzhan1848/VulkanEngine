@@ -2,82 +2,60 @@
 
 #include "defines.h"
 
-typedef union vec2_u
-{
+typedef union vec2_u {
     // An array of x, y
     f32 elements[2];
-    struct
-    {
-        union
-        {
+    struct {
+        union {
             // The first element.
             f32 x, r, s, u;
         };
-        union
-        {
+        union {
             // The second element.
             f32 y, g, t, v;
-        };  
+        };
     };
 } vec2;
 
-typedef struct vec3_u
-{
-    union
-    {
-        // An array of x, y, z
-        f32 elements[3];
-        struct
-        {
-            union
-            {
-                // The first elements/
-                f32 x, r, s, u;
-            };
-            union
-            {
-                // The second elements
-                f32 y, g, t, v;
-            };
-            union
-            {
-                // The third element
-                f32 z, b, p, w;
-            };
+typedef union vec3_u {
+    // An array of x, y, z
+    f32 elements[3];
+    struct {
+        union {
+            // The first element.
+            f32 x, r, s, u;
+        };
+        union {
+            // The second element.
+            f32 y, g, t, v;
+        };
+        union {
+            // The third element.
+            f32 z, b, p, w;
         };
     };
 } vec3;
 
-typedef union vec4_u
-{
-#if defined(KUSE_SIMD)
-    // Used for SIMD operations.
-    alignas(16) __m128 data;
-#endif
+typedef union vec4_u {
+
     // An array of x, y, z, w
-    alignas(16) f32 elements[4];
-    union
-    {
-        struct
-        {
-            union
-            {
+    f32 elements[4];
+    union {
+        struct {
+            union {
                 // The first element.
                 f32 x, r, s;
             };
-            union
-            {
+            union {
                 // The second element.
                 f32 y, g, t;
             };
-            union
-            {
+            union {
                 // The third element.
                 f32 z, b, p;
             };
-            union
-            {
-                // The fourth element
+            union {
+                // The fourth element.
                 f32 w, a, q;
             };
         };
@@ -85,3 +63,7 @@ typedef union vec4_u
 } vec4;
 
 typedef vec4 quat;
+
+typedef union mat4_u {
+    f32 data[16];
+} mat4;
