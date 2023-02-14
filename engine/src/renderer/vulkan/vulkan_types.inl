@@ -2,6 +2,7 @@
 
 #include "defines.h"
 #include "core/asserts.h"
+#include "renderer/renderer_types.inl"
 
 #include <vulkan/vulkan.h>
 
@@ -10,6 +11,18 @@
     {                                \
         KASSERT(expr == VK_SUCCESS); \
     }
+
+typedef struct vulkan_buffer
+{
+    u64 total_size;
+    VkBuffer handle;
+    VkBufferUsageFlagBits usage;
+    b8 is_locked;
+    VkDeviceMemory memory;
+    i32 memory_index;
+    u32 memory_property_flags;
+} vulkan_buffer;
+
 
 typedef struct vulkan_swapchain_support_info {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -26,6 +39,7 @@ typedef struct vulkan_device {
     i32 graphics_queue_index;
     i32 present_queue_index;
     i32 transfer_queue_index;
+    b8 supports_device_local_host_visible;
 
     VkQueue graphics_queue;
     VkQueue present_queue;
@@ -110,7 +124,78 @@ typedef struct vulkan_fence {
     b8 is_signaled;
 } vulkan_fence;
 
+typedef struct vulkan_shader_stage
+{
+    VkShaderModuleCreateInfo create_info;
+    VkShaderModule handle;
+    VkPipelineShaderStageCreateInfo shader_stage_create_info;
+} vulkan_shader_stage;
+
+typedef struct vulkan_pipeline
+{
+    VkPipeline handle;
+    VkPipelineLayout pipeline_layout;
+} vulkan_pipeline;
+
+#define OBJECT_SHADER_STAGE_COUNT 2
+
+typedef struct vulkan_descriptor_state
+{
+    // One per frame
+    u32 generations[3];
+} vulkan_descriptor_state;
+
+#define VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT 2
+
+typedef struct vulkan_object_shader_object_state
+{
+    // Per frame
+    VkDescriptorSet descriptor_sets[3];
+
+    // Per descriptor
+    vulkan_descriptor_state descriptor_states[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+} vulkan_object_shader_object_state;
+
+
+// Max number of objects
+#define VULKAN_OBJECT_MAX_OBJECT_COUNT 1024
+
+typedef struct vulkan_object_shader
+{
+    // vertex, fragment
+    vulkan_shader_stage stages[OBJECT_SHADER_STAGE_COUNT];
+
+    VkDescriptorPool global_descriptor_pool;
+    VkDescriptorSetLayout global_descriptor_set_layout;
+
+    // One descriptor set per frame - max 3 for triple-buffering
+    VkDescriptorSet global_descriptor_sets[3];
+
+    // Global uniform buffer object
+    global_uniform_object global_ubo;
+
+    // Global uniform buffer
+    vulkan_buffer global_uniform_buffer;
+
+    VkDescriptorPool object_desdcriptor_pool;
+    VkDescriptorSetLayout object_descriptor_set_layout;
+    // Object uniform buffers
+    vulkan_buffer object_uniform_buffer;
+    // TODO: manage a free list of some kind here instead
+    u32 object_uniform_buffer_index;
+
+    // TODO: make dynamic
+    vulkan_object_shader_object_state object_states[VULKAN_OBJECT_MAX_OBJECT_COUNT];
+
+    // Pointers to default textures
+    texture* default_diffuse;
+
+    vulkan_pipeline pipeline;
+} vulkan_object_shader;
+
 typedef struct vulkan_context {
+
+    f32 frame_delta_time;
 
     // The framebuffer's current width.
     u32 framebuffer_width;
@@ -139,6 +224,9 @@ typedef struct vulkan_context {
     vulkan_swapchain swapchain;
     vulkan_renderpass main_renderpass;
 
+    vulkan_buffer object_vertex_buffer;
+    vulkan_buffer object_index_buffer;
+
     // darray
     vulkan_command_buffer* graphics_command_buffers;
 
@@ -159,6 +247,17 @@ typedef struct vulkan_context {
 
     b8 recreating_swapchain;
 
+    vulkan_object_shader object_shader;
+
+    u64 geometry_vertex_offset;
+    u64 geometry_index_offset;
+
     i32 (*find_memory_index)(u32 type_filter, u32 property_flags);
 
 } vulkan_context;
+
+typedef struct vulkan_texture_data
+{
+    vulkan_image image;
+    VkSampler sampler;
+} vulkan_texture_data;
