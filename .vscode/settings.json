@@ -1,14 +1,14 @@
+
 {
     "workbench.colorTheme": "Gruvbox Dark (Hard)",
     "xmlTools.enforcePrettySelfClosingTagOnFormat": true,
     "editor.minimap.enabled": false,
-    "terminal.integrated.shell.windows": "C:/Program Files/PowerShell/7/pwsh.exe",
-    "terminal.integrated.fontFamily": "Cascadia Mono PL",
+    "terminal.integrated.shell.windows": "c:/Program Files/PowerShell/7/pwsh.exe",
     "terminal.integrated.fontWeight": "1",
     "editor.fontFamily": "Liberation Mono",
     "editor.fontSize": 16,
     "editor.fontWeight": "1",
-    "workbench.editor.showTabs": false,
+    "workbench.editor.showTabs": true,
     "workbench.activityBar.visible": true,
     "workbench.colorCustomizations": {
         "editorCursor.foreground": "#00ff33",
@@ -61,9 +61,14 @@
         "vulkan_platform.h": "c",
         "renderer_frontend.h": "c",
         "iosfwd": "c",
-        "tuple": "c",
+        "tuple": "cpp",
         "utility": "cpp",
         "kmemory.h": "c",
-        "defines.h": "c"
+        "defines.h": "c",
+        "vulkan_types.inl": "c",
+        "clock.h": "c",
+        "kstring.h": "c",
+        "logger.h": "c",
+        "stb_image.h": "c"
     }
 }

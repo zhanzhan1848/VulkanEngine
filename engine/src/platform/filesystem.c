@@ -78,6 +78,7 @@ b8 filesystem_read_line(file_handle* handle, u64 max_length, char** line_buf, u6
             return true;
         }
     }
+    return false;
 }
 
 b8 filesystem_write_line(file_handle* handle, const char* text)
