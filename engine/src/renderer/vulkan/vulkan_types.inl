@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "core/asserts.h"
 #include "renderer/renderer_types.inl"
+#include "containers/freelist.h"
 
 #include <vulkan/vulkan.h>
 
@@ -21,6 +22,9 @@ typedef struct vulkan_buffer
     VkDeviceMemory memory;
     i32 memory_index;
     u32 memory_property_flags;
+    u64 freelist_memory_requirement;
+    void* freelist_block;
+    freelist buffer_freelist;
 } vulkan_buffer;
 
 
@@ -167,10 +171,10 @@ typedef struct vulkan_geometry_data {
     u32 generation;
     u32 vertex_count;
     u32 vertex_element_size;
-    u32 vertex_buffer_offset;
+    u64 vertex_buffer_offset;
     u32 index_count;
     u32 index_element_size;
-    u32 index_buffer_offset;
+    u64 index_buffer_offset;
 } vulkan_geometry_data;
 
 typedef struct vulkan_material_shader_global_ubo
@@ -346,9 +350,6 @@ typedef struct vulkan_context {
 
     vulkan_material_shader material_shader;
     vulkan_ui_shader ui_shader;
-
-    u64 geometry_vertex_offset;
-    u64 geometry_index_offset;
 
     // TODO: make dynamic
     vulkan_geometry_data geometries[VULKAN_MAX_GEOMETRY_COUNT];
