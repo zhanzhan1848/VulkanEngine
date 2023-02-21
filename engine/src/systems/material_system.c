@@ -227,6 +227,9 @@ b8 load_material(material_config config, material* m) {
     // name
     string_ncopy(m->name, config.name, MATERIAL_NAME_MAX_LENGTH);
 
+    // Type
+    m->type = config.type;
+
     // Diffuse colour
     m->diffuse_color = config.diffuse_color;
 
