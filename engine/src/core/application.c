@@ -22,6 +22,7 @@
 
 // TODO: temp
 #include "math/kmath.h"
+#include "math/geometry_utils.h"
 // TODO: end temp
 
 typedef struct application_state {
@@ -84,24 +85,55 @@ b8 event_on_debug_event(u16 code, void* sender, void* listener_inst, event_conte
         "cobblestone",
         "paving",
         "paving2"};
+    const char* spec_names[3] = {
+        "cobblestone_SPEC",
+        "paving_SPEC",
+        "paving2_SPEC"};
+    const char* normal_names[3] = {
+        "cobblestone_NRM",
+        "paving_NRM",
+        "paving2_NRM"};
     static i8 choice = 2;
 
     // Save off the old name.
     const char* old_name = names[choice];
+    const char* old_spec_name = names[choice];
+    const char* old_norm_name = names[choice];
 
     choice++;
     choice %= 3;
 
     // Acquire the new texture.
     if (app_state->test_geometry) {
+        // Acquire the new diffuse texture.
         app_state->test_geometry->material->diffuse_map.texture = texture_system_acquire(names[choice], true);
         if (!app_state->test_geometry->material->diffuse_map.texture) {
-            KWARN("event_on_debug_event no texture! using default");
+            KWARN("event_on_debug_event no diffuse texture! using default");
             app_state->test_geometry->material->diffuse_map.texture = texture_system_get_default_texture();
         }
 
-        // Release the old texture.
+        // Release the old diffuse texture.
         texture_system_release(old_name);
+
+        // Acquire the new spec texture.
+        app_state->test_geometry->material->specular_map.texture = texture_system_acquire(spec_names[choice], true);
+        if (!app_state->test_geometry->material->specular_map.texture) {
+            KWARN("event_on_debug_event no spec texture! using default");
+            app_state->test_geometry->material->specular_map.texture = texture_system_get_default_specular_texture();
+        }
+
+        // Release the old spec texture.
+        texture_system_release(old_spec_name);
+
+        // Acquire the new normal texture.
+        app_state->test_geometry->material->normal_map.texture = texture_system_acquire(normal_names[choice], true);
+        if (!app_state->test_geometry->material->normal_map.texture) {
+            KWARN("event_on_debug_event no normal texture! using default");
+            app_state->test_geometry->material->normal_map.texture = texture_system_get_default_normal_texture();
+        }
+
+        // Release the old normal texture.
+        texture_system_release(old_norm_name);
     }
 
     return true;
@@ -244,7 +276,8 @@ b8 application_create(game* game_inst) {
     // TODO: temp 
 
     // Load up a plane configuration, and load geometry from it.
-    geometry_config g_config = geometry_system_generate_plane_config(10.0f, 5.0f, 5, 5, 5.0f, 2.0f, "test geometry", "test_material");
+    geometry_config g_config = geometry_system_generate_cube_config(10.0f, 10.0f, 10.0f, 1.0f, 1.0f, "test_cube", "test_material");
+    geometry_generate_tangents(g_config.vertex_count, g_config.vertices, g_config.index_count, g_config.indices);
     app_state->test_geometry = geometry_system_acquire_from_config(g_config, true);
 
     // Clean up the allocations for the geometry config.
@@ -260,24 +293,25 @@ b8 application_create(game* game_inst) {
     string_ncopy(ui_config.material_name, "test_ui_material", MATERIAL_NAME_MAX_LENGTH);
     string_ncopy(ui_config.name, "test_ui_geometry", GEOMETRY_NAME_MAX_LENGTH);
 
-    const f32 f = 512.0f;
+    const f32 w = 128.0f;
+    const f32 h = 32.0f;
     vertex_2d uiverts[4];
     uiverts[0].position.x = 0.0f;  // 0    3
     uiverts[0].position.y = 0.0f;  //
     uiverts[0].texcoord.x = 0.0f;  //
     uiverts[0].texcoord.y = 0.0f;  // 2    1
 
-    uiverts[1].position.y = f;
-    uiverts[1].position.x = f;
+    uiverts[1].position.y = h;
+    uiverts[1].position.x = w;
     uiverts[1].texcoord.x = 1.0f;
     uiverts[1].texcoord.y = 1.0f;
 
     uiverts[2].position.x = 0.0f;
-    uiverts[2].position.y = f;
+    uiverts[2].position.y = h;
     uiverts[2].texcoord.x = 0.0f;
     uiverts[2].texcoord.y = 1.0f;
 
-    uiverts[3].position.x = f;
+    uiverts[3].position.x = w;
     uiverts[3].position.y = 0.0;
     uiverts[3].texcoord.x = 1.0f;
     uiverts[3].texcoord.y = 0.0f;
@@ -349,7 +383,16 @@ b8 application_run() {
             // TODO: temp
             geometry_render_data test_render;
             test_render.geometry = app_state->test_geometry;
-            test_render.model = mat4_identity();
+            // test_render.model = mat4_identity();
+            static f32 angle = 0;
+            angle += (0.25f * delta);
+            quat rotation = quat_from_axis_angle((vec3){0, 1, 0}, angle, false);
+            mat4 t = mat4_translation(vec3_zero());
+            mat4 r = quat_to_mat4(rotation);  //  quat_to_rotation_matrix(rotation, vec3_zero());
+            mat4 s = mat4_scale(vec3_one());
+            t = mat4_mul(r, t);
+            t = mat4_mul(s, t);
+            test_render.model = t;
 
             packet.geometry_count = 1;
             packet.geometries = &test_render;
