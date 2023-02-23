@@ -27,6 +27,14 @@ typedef _Bool b8;
 #define STATIC_ASSERT static_assert
 #endif
 
+/** @brief A range, typically of memory */
+typedef struct range {
+    /** @brief The offset in bytes. */
+    u64 offset;
+    /** @brief The size in bytes. */
+    u64 size;
+} range;
+
 // Ensure all types are of the correct size.
 STATIC_ASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
 STATIC_ASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
@@ -49,6 +57,8 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
  * and not actually pointing to a real object
  */
 #define INVALID_ID 4294967295U
+#define INVALID_ID_U16 65535U
+#define INVALID_ID_U8 255U
 
 // Platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) 
@@ -132,3 +142,11 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define MEGABYTES(amount) amount * 1000 * 1000
 /** @brief Gets the number of bytes from amount of kilobytes (KB) (1000) */
 #define KIGABYTES(amount) amount * 1000
+
+KINLINE u64 get_aligned(u64 operand, u64 granularity) {
+    return ((operand + (granularity - 1)) & ~(granularity - 1));
+}
+
+KINLINE range get_aligned_range(offset, size, granularity) {
+    return (range){get_aligned(offset, granularity), get_aligned(size, granularity)};
+}

@@ -144,7 +144,7 @@ void create(vulkan_context* context, u32 width, u32 height, vulkan_swapchain* sw
     // Swapchain create info
     VkSwapchainCreateInfoKHR swapchain_create_info = {VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR};
     swapchain_create_info.surface = context->surface;
-    swapchain_create_info.minImageCount = image_count;
+    swapchain_create_info.minImageCount = image_count; // image_count
     swapchain_create_info.imageFormat = swapchain->image_format.format;
     swapchain_create_info.imageColorSpace = swapchain->image_format.colorSpace;
     swapchain_create_info.imageExtent = swapchain_extent;
