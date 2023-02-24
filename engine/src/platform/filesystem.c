@@ -6,12 +6,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <io.h>
 
 b8 filesystem_exists(const char* path)
 {
 #ifdef _MSC_VER
-    struct _stat buffer;
-    return _stat(path, &buffer);
+    // In Windows10 stat.h will return false when file exists, so use _access() in <io.h>
+    // struct _stat buffer;
+    // return _stat(path, &buffer);
+    return _access(path, 0) == 0;
 #else
     struct stat buffer;
     return stat(path, &buffer) == 0;

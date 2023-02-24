@@ -28,7 +28,7 @@ b8 image_loader_load(struct resource_loader* self, const char* name, resource* o
     char* extensions[IMAGE_EXTENSION_COUNT] = {".tga", ".png", ".jpg", ".bmp"};
     for (u32 i = 0; i < IMAGE_EXTENSION_COUNT; ++i) {
         string_format(full_file_path, format_str, resource_system_base_path(), self->type_path, name, extensions[i]);
-        if (!filesystem_exists(full_file_path)) {
+        if (filesystem_exists(full_file_path)) {
             found = true;
             break;
         }

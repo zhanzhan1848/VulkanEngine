@@ -74,7 +74,7 @@ b8 mesh_loader_load(struct resource_loader* self, const char* name, resource* ou
     for (u32 i = 0; i < SUPPORTED_FILETYPE_COUNT; ++i) {
         string_format(full_file_path, format_str, resource_system_base_path(), self->type_path, name, supported_filetypes[i].extension);
         // If the file exists, open it and stop looking.
-        if (!filesystem_exists(full_file_path)) {
+        if (filesystem_exists(full_file_path)) {
             if (filesystem_open(full_file_path, FILE_MODE_READ, supported_filetypes[i].is_binary, &f)) {
                 type = supported_filetypes[i].type;
                 break;
