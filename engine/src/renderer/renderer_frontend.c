@@ -144,6 +144,9 @@ void renderer_on_resized(u16 width, u16 height) {
 }
 
 b8 renderer_draw_frame(render_packet* packet) {
+
+    state_ptr->backend.frame_number++;
+
     // If the begin frame returned successfully, mid-frame operations may continue.
     if (state_ptr->backend.begin_frame(&state_ptr->backend, packet->delta_time)) {
         // World renderpass
@@ -173,10 +176,17 @@ b8 renderer_draw_frame(render_packet* packet) {
                 m = material_system_get_default();
             }
 
-            // Apply the material
-            if (!material_system_apply_instance(m)) {
+            // Update the material if it hasn't already been this frame. This keeps the
+            // same material from being updated multiple times. It still needs to be bound
+            // either way, so this check result gets passed to the backend which either
+            // updates the internal shader bindings and binds them, or only binds them.
+            b8 needs_update = m->render_frame_number != state_ptr->backend.frame_number;
+            if (!material_system_apply_instance(m, needs_update)) {
                 KWARN("Failed to apply material '%s'. Skipping draw.", m->name);
                 continue;
+            } else {
+                // Sync the frame number.
+                m->render_frame_number = state_ptr->backend.frame_number;
             }
 
             // Apply the locals
@@ -220,10 +230,18 @@ b8 renderer_draw_frame(render_packet* packet) {
             } else {
                 m = material_system_get_default();
             }
-            // Apply the material
-            if (!material_system_apply_instance(m)) {
+
+            // Update the material if it hasn't already been this frame. This keeps the
+            // same material from being updated multiple times. It still needs to be bound
+            // either way, so this check result gets passed to the backend which either
+            // updates the internal shader bindings and binds them, or only binds them.
+            b8 needs_update = m->render_frame_number != state_ptr->backend.frame_number;
+            if (!material_system_apply_instance(m, needs_update)) {
                 KWARN("Failed to apply UI material '%s'. Skipping draw.", m->name);
                 continue;
+            } else {
+                // Sync the frame number.
+                m->render_frame_number = state_ptr->backend.frame_number;
             }
 
             // Apply the locals
@@ -242,7 +260,6 @@ b8 renderer_draw_frame(render_packet* packet) {
 
         // End the frame. If this fails, it is likely unrecoverable.
         b8 result = state_ptr->backend.end_frame(&state_ptr->backend, packet->delta_time);
-        state_ptr->backend.frame_number++;
 
         if (!result) {
             KERROR("renderer_end_frame failed. Application shutting down...");
@@ -320,8 +337,8 @@ b8 renderer_shader_apply_globals(shader* s) {
     return state_ptr->backend.shader_apply_globals(s);
 }
 
-b8 renderer_shader_apply_instance(shader* s) {
-    return state_ptr->backend.shader_apply_instance(s);
+b8 renderer_shader_apply_instance(shader* s, b8 needs_update) {
+    return state_ptr->backend.shader_apply_instance(s, needs_update);
 }
 
 b8 renderer_shader_acquire_instance_resources(shader* s, u32* out_instance_id) {

@@ -84,6 +84,8 @@
         "random": "c",
         "string_view": "c",
         "limits": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "filesystem.h": "c",
+        "hashtable.h": "c"
     }
 }
