@@ -86,6 +86,11 @@
         "limits": "c",
         "sstream": "c",
         "filesystem.h": "c",
-        "hashtable.h": "c"
+        "hashtable.h": "c",
+        "atomic": "c",
+        "*.tcc": "c",
+        "iomanip": "c",
+        "istream": "c",
+        "ostream": "c"
     }
 }

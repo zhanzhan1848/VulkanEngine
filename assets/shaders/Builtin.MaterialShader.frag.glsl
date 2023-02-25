@@ -27,15 +27,15 @@ struct directional_light {
 // TODO: feed in from cpu
 directional_light dir_light = {
     vec3(-0.57735, -0.57735, 0.57735),
-    //vec4(0.8, 0.8, 0.8, 1.0)
-    vec4(0.4, 0.4, 0.2, 1.0)
+    vec4(0.8, 0.8, 0.8, 1.0)
+    //vec4(0.4, 0.4, 0.2, 1.0)
 };
 
 // TODO: feed in from cpu
 point_light p_light_0 = {
     vec3(-5.5, 0.0, -5.5),
     vec4(0.0, 1.0, 0.0, 1.0),
-    1.0, // Constant
+    3.0, // Constant
     0.35, // Linear
     0.44  // Quadratic
 };
@@ -44,7 +44,7 @@ point_light p_light_0 = {
 point_light p_light_1 = {
     vec3(5.5, 0.0, -5.5),
     vec4(1.0, 0.0, 0.0, 1.0),
-    1.0, // Constant
+    3.0, // Constant
     0.35, // Linear
     0.44  // Quadratic
 };
