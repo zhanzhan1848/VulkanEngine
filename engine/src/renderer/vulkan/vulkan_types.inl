@@ -60,6 +60,7 @@ typedef struct vulkan_device {
     VkPhysicalDeviceMemoryProperties memory;
 
     VkFormat depth_format;
+    u8 depth_channel_count;
 } vulkan_device;
 
 typedef struct vulkan_image {
@@ -81,13 +82,10 @@ typedef enum vulkan_render_pass_state {
 
 typedef struct vulkan_renderpass {
     VkRenderPass handle;
-    vec4 render_area;
-    vec4 clear_color;
 
     f32 depth;
     u32 stencil;
 
-    u8 clear_flags;
     b8 has_prev_pass;
     b8 has_next_pass;
 
@@ -101,7 +99,9 @@ typedef struct vulkan_swapchain {
     u32 image_count;
     texture** render_textures;
 
-    vulkan_image depth_attachment;
+    texture* depth_texture;
+
+    render_target render_targets[3];
 
     // framebuffers used for on-screen rendering, one per frame
     VkFramebuffer framebuffers[3];
@@ -292,6 +292,8 @@ typedef struct vulkan_shader {
 
 } vulkan_shader;
 
+#define VULKAN_MAX_REGISTERED_RENDERPASSES 31
+
 typedef struct vulkan_context {
 
     f32 frame_delta_time;
@@ -321,8 +323,11 @@ typedef struct vulkan_context {
     vulkan_device device;
 
     vulkan_swapchain swapchain;
-    vulkan_renderpass main_renderpass;
-    vulkan_renderpass ui_renderpass;
+
+    void* renderpass_table_block;
+    hashtable renderpass_table;
+
+    renderpass registered_passes[VULKAN_MAX_REGISTERED_RENDERPASSES];
 
     vulkan_buffer object_vertex_buffer;
     vulkan_buffer object_index_buffer;
@@ -350,10 +355,16 @@ typedef struct vulkan_context {
     // TODO: make dynamic
     vulkan_geometry_data geometries[VULKAN_MAX_GEOMETRY_COUNT];
 
-    // Framebuffers used for world rendering, one per frame
-    VkFramebuffer world_framebuffers[3];
+    /** @brief Render targets used for world rendering. @note One per frame. */
+    render_target world_render_targets[3];
 
     i32 (*find_memory_index)(u32 type_filter, u32 property_flags);
+
+    /**
+     * @brief A pointer to a function to be called when the backend requires
+     * rendertargets to be refreshed/regenerated.
+     */
+    void (*on_rendertarget_refresh_required)();
 
 } vulkan_context;
 
