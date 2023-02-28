@@ -85,8 +85,8 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const renderer_
     // Just set some default values for the framebuffer for now.
     // It doesn't really matyer what these are because they will be
     // overridden, but are needed for swapchain creation.
-    context.framebuffer_width = 800;
-    context.framebuffer_height = 600;
+    context.framebuffer_width = 1280;
+    context.framebuffer_height = 720;
 
     // Setup Vulkan instance.
     VkApplicationInfo app_info = {VK_STRUCTURE_TYPE_APPLICATION_INFO};
@@ -534,7 +534,7 @@ b8 vulkan_renderer_backend_end_frame(renderer_backend* backend, f32 delta_time) 
     return true;
 }
 
-b8 vulkan_renderer_begin_renderpass(struct renderer_backend* backend, renderpass* pass, render_target* target) {
+b8 vulkan_renderer_renderpass_begin(renderpass* pass, render_target* target) {
     vulkan_command_buffer* command_buffer = &context.graphics_command_buffers[context.image_index];
 
     // Begin the render pass.
@@ -577,7 +577,7 @@ b8 vulkan_renderer_begin_renderpass(struct renderer_backend* backend, renderpass
     return true;
 }
 
-b8 vulkan_renderer_end_renderpass(struct renderer_backend* backend, renderpass* pass) {
+b8 vulkan_renderer_renderpass_end(renderpass* pass) {
     vulkan_command_buffer* command_buffer = &context.graphics_command_buffers[context.image_index];
 
     // End the renderpass.
@@ -1037,13 +1037,13 @@ void vulkan_renderer_destroy_geometry(geometry* geometry) {
     }
 }
 
-void vulkan_renderer_draw_geometry(geometry_render_data data) {
+void vulkan_renderer_draw_geometry(geometry_render_data* data) {
     // Ignore non-uploaded geometries.
-    if (data.geometry && data.geometry->internal_id == INVALID_ID) {
+    if (data->geometry && data->geometry->internal_id == INVALID_ID) {
         return;
     }
 
-    vulkan_geometry_data* buffer_data = &context.geometries[data.geometry->internal_id];
+    vulkan_geometry_data* buffer_data = &context.geometries[data->geometry->internal_id];
     vulkan_command_buffer* command_buffer = &context.graphics_command_buffers[context.image_index];
 
     // Bind vertex buffer at offset.
