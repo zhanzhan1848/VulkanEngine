@@ -92,6 +92,6 @@
         "iomanip": "c",
         "istream": "c",
         "ostream": "c",
-        "xmemory": "c"
+        "camera_system.h": "c"
     }
 }
