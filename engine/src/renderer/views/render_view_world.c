@@ -18,7 +18,7 @@ typedef struct render_view_world_internal_data {
     f32 far_clip;
     mat4 projection_matrix;
     camera* world_camera;
-    vec4 ambient_colour;
+    vec4 ambient_color;
     u32 render_mode;
 } render_view_world_internal_data;
 
@@ -93,7 +93,7 @@ b8 render_view_world_on_create(struct render_view* self) {
         data->world_camera = camera_system_get_default();
 
         // TODO: Obtain from scene
-        data->ambient_colour = (vec4){0.25f, 0.25f, 0.25f, 1.0f};
+        data->ambient_color = (vec4){0.25f, 0.25f, 0.25f, 1.0f};
 
         // Listen for mode changes.
         if (!event_register(EVENT_CODE_SET_RENDER_MODE, self, render_view_on_event)) {
@@ -150,7 +150,7 @@ b8 render_view_world_on_build_packet(const struct render_view* self, void* data,
     out_packet->projection_matrix = internal_data->projection_matrix;
     out_packet->view_matrix = camera_view_get(internal_data->world_camera);
     out_packet->view_position = camera_position_get(internal_data->world_camera);
-    out_packet->ambient_colour = internal_data->ambient_colour;
+    out_packet->ambient_color = internal_data->ambient_color;
 
     // Obtain all geometries from the current scene.
     
@@ -217,7 +217,7 @@ b8 render_view_world_on_render(const struct render_view* self, const struct rend
         // Apply globals
         // TODO: Find a generic way to request data such as ambient colour (which should be from a scene),
         // and mode (from the renderer)
-        if (!material_system_apply_global(shader_id, frame_number, &packet->projection_matrix, &packet->view_matrix, &packet->ambient_colour, &packet->view_position, data->render_mode)) {
+        if (!material_system_apply_global(shader_id, frame_number, &packet->projection_matrix, &packet->view_matrix, &packet->ambient_color, &packet->view_position, data->render_mode)) {
             KERROR("Failed to use apply globals for material shader. Render frame failed.");
             return false;
         }
