@@ -92,6 +92,7 @@
         "iomanip": "c",
         "istream": "c",
         "ostream": "c",
-        "camera_system.h": "c"
+        "camera_system.h": "c",
+        "render_view_world.h": "c"
     }
 }
