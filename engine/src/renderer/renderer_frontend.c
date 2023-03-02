@@ -66,8 +66,8 @@ b8 renderer_system_initialize(u64* memory_requirement, void* state, const char* 
     state_ptr = state;
 
     // Default framebuffer size. Overridden when window is created.
-    state_ptr->framebuffer_width = 1280;
-    state_ptr->framebuffer_height = 720;
+    state_ptr->framebuffer_width = 800;
+    state_ptr->framebuffer_height = 600;
     state_ptr->resizing = false;
     state_ptr->frames_since_resize = 0;
 

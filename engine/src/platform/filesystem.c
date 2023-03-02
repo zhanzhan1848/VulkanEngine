@@ -12,9 +12,9 @@ b8 filesystem_exists(const char* path)
 {
 #ifdef _MSC_VER
     // In Windows10 stat.h will return false when file exists, so use _access() in <io.h>
-    // struct _stat buffer;
-    // return _stat(path, &buffer);
-    return _access(path, 0) == 0;
+    struct _stat buffer;
+    return _stat(path, &buffer) == 0;
+    // return _access(path, 0) == 0;
 #else
     struct stat buffer;
     return stat(path, &buffer) == 0;

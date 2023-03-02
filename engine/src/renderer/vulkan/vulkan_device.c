@@ -449,14 +449,8 @@ b8 physical_device_meets_requirements(
         u8 current_transfer_score = 0;
 
         // Graphics queue?
-        if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        if (out_queue_info->graphics_family_index == -1 && queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             out_queue_info->graphics_family_index = i;
-            ++current_transfer_score;
-        }
-
-        // Compute queue?
-        if (out_queue_info->graphics_family_index == -1 && queue_families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
-            out_queue_info->compute_family_index = i;
             ++current_transfer_score;
 
             // If also a present queue, this prioritizes grouping of the 2.
@@ -466,6 +460,12 @@ b8 physical_device_meets_requirements(
                 out_queue_info->present_family_index = i;
                 ++current_transfer_score;
             }
+        }
+
+        // Compute queue?
+        if (queue_families[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            out_queue_info->compute_family_index = i;
+            ++current_transfer_score;
         }
 
         // Transfer queue?
