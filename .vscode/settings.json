@@ -93,6 +93,7 @@
         "istream": "c",
         "ostream": "c",
         "camera_system.h": "c",
-        "render_view_skybox.h": "c"
+        "render_view_skybox.h": "c",
+        "renderer_types.inl": "c"
     }
 }
