@@ -18,7 +18,6 @@ struct vulkan_context;
 
 typedef struct vulkan_buffer
 {
-    u64 total_size;
     VkBuffer handle;
     VkBufferUsageFlagBits usage;
     b8 is_locked;
@@ -26,10 +25,6 @@ typedef struct vulkan_buffer
     VkMemoryRequirements memory_requirements;
     i32 memory_index;
     u32 memory_property_flags;
-    u64 freelist_memory_requirement;
-    void* freelist_block;
-    freelist buffer_freelist;
-    b8 has_freelist;
 } vulkan_buffer;
 
 
@@ -291,7 +286,7 @@ typedef struct vulkan_shader {
     /** @brief Global descriptor sets, one per frame. */
     VkDescriptorSet global_descriptor_sets[3];
     /** @brief The uniform buffer used by this shader. */
-    vulkan_buffer uniform_buffer;
+    renderbuffer uniform_buffer;
     /** @brief The pipeline associated with this shader. */
     vulkan_pipeline pipeline;
     /** @brief The instance states for all instances. @todo TODO: make dynamic */
@@ -348,8 +343,8 @@ typedef struct vulkan_context {
 
     renderpass registered_passes[VULKAN_MAX_REGISTERED_RENDERPASSES];
 
-    vulkan_buffer object_vertex_buffer;
-    vulkan_buffer object_index_buffer;
+    renderbuffer object_vertex_buffer;
+    renderbuffer object_index_buffer;
 
     // darray
     vulkan_command_buffer* graphics_command_buffers;
